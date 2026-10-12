@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack Blackzada</title>
+    <link rel="icon" type="image/png" href="perfil_stackblackzada_ciano.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Google Fonts: Outfit (Títulos) & Space Grotesk (Tech/Código) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#DDF9F6',   /* Fundo menta claro */
+                            card: '#EAFDFB',    /* Cards no modo claro */
+                            dark: '#08171A',    /* Fundo/Texto escuro */
+                            accent: '#20E3BD',  /* Verde turquesa vibrante */
+                            subtle: '#124844'   /* Tom secundário para alto contraste */
+                        },
+                        darkbg: {
+                            main: '#060F11',    /* Fundo principal modo escuro */
+                            card: '#0C1E22',    /* Cards modo escuro */
+                            nav: '#08171A'      /* Navbar modo escuro */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                        code: ['Space Grotesk', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden; /* evita rolagem lateral no celular */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3, .font-display {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        .font-code {
+            font-family: 'Space Grotesk', monospace;
+        }
+
+        /* Efeito Glow Pulsante */
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(32, 227, 189, 0.45);
+        }
+
+        @media (hover: hover) {
+            .glow-effect:hover {
+                box-shadow: 0 0 35px rgba(32, 227, 189, 0.7);
+            }
+        }
+
+        /* Efeito de Varredura de Luz (Shine Sweep) nos Botões */
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 50%;
+            height: 200%;
+            background: linear-gradient(
+                60deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            transform: rotate(25deg);
+            transition: all 0.6s ease;
+        }
+
+        @media (hover: hover) {
+            .btn-shine:hover::after {
+                left: 120%;
+            }
+        }
+
+        /* Pattern de Grid Estilo IDE / Código */
+        .bg-tech-grid {
+            background-image: radial-gradient(rgba(32, 227, 189, 0.22) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        /* FILTRO PARA DISFARÇAR A QUALIDADE DA IMAGEM PRINCIPAL */
+        .hero-img-filter {
+            filter: contrast(110%) brightness(98%) drop-shadow(0 15px 35px rgba(32, 227, 189, 0.4));
+            transition: filter 0.3s ease;
+        }
+
+        /* Glass Card Base */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(32, 227, 189, 0.3);
+            transform-style: preserve-3d;
+            transition: transform 0.2s ease-out, box-shadow 0.3s ease, background-color 0.4s ease, border-color 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efeito Spotlight / Reflexo de luz dinâmico */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(
+                350px circle at var(--x, 50%) var(--y, 50%),
+                rgba(255, 255, 255, 0.65),
+                transparent 70%
+            );
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .dark .glass-card::before {
+            background: radial-gradient(
+                350px circle at var(--x, 50%) var(--y, 50%),
+                rgba(32, 227, 189, 0.35),
+                transparent 70%
+            );
+        }
+
+        .dark .glass-card {
+            background: rgba(12, 30, 34, 0.8);
+            border: 1px solid rgba(32, 227, 189, 0.2);
+        }
+
+        /* Hover só em dispositivos com mouse (no celular o hover "gruda" depois do toque) */
+        @media (hover: hover) {
+            .glass-card:hover::before {
+                opacity: 1;
+            }
+
+            .glass-card:hover {
+                box-shadow: 0 15px 30px -10px rgba(32, 227, 189, 0.3);
+            }
+        }
+
+        .will-change-transform {
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        /* Gradiente de Alta Visibilidade para Títulos */
+        .text-hero-title {
+            color: #06181B;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .dark .text-hero-title {
+            color: #FFFFFF;
+            text-shadow: 0 0 20px rgba(32, 227, 189, 0.3);
+        }
+
+        /* Destaque da palavra Blackzada */
+        .text-hero-highlight {
+            color: #0E5A55;
+            text-shadow: 0 0 12px rgba(32, 227, 189, 0.4);
+        }
+
+        .dark .text-hero-highlight {
+            color: #20E3BD;
+            text-shadow: 0 0 20px rgba(32, 227, 189, 0.5);
+        }
+
+        /* Celular: blur mais leve para não pesar e quebra de palavras longas */
+        @media (max-width: 639px) {
+            .glass-card {
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+
+            h1, h2, h3, p, a, span {
+                overflow-wrap: anywhere;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-brand-light text-brand-dark dark:bg-darkbg-main dark:text-gray-100 bg-tech-grid">
+
+    <!-- Navbar Tech Minimalista -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-brand-light/80 dark:bg-darkbg-nav/80 border-b border-brand-subtle/10 dark:border-brand-accent/10 px-3 sm:px-6 py-3 flex justify-between items-center gap-2 transition-all duration-300">
+        <!-- Logo e Título (Sem tag de link) -->
+        <div class="flex items-center gap-2 sm:gap-3 select-none min-w-0">
+            <img src="logo_metalizada_sb.png" alt="Logo Stack Blackzada" class="h-8 sm:h-9 w-auto object-contain shrink-0">
+            <div class="flex flex-col min-w-0">
+                <span class="font-display font-black text-sm sm:text-xl tracking-normal sm:tracking-wider uppercase text-brand-dark dark:text-white leading-none whitespace-nowrap">
+                    STACK <span class="text-brand-subtle dark:text-brand-accent">BLACKZADA</span>
+                </span>
+                <span class="hidden sm:block font-code text-[10px] text-brand-subtle/80 dark:text-brand-accent/70 tracking-widest mt-0.5">&lt;SOFTWARE_HOUSE /&gt;</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+            <!-- Seletor de Idioma -->
+            <div class="relative">
+                <select id="language-select" aria-label="Selecionar Idioma" class="bg-white/80 dark:bg-darkbg-card border border-brand-subtle/30 dark:border-brand-accent/40 text-brand-dark dark:text-gray-200 text-xs font-code font-bold rounded-full px-2 sm:px-3 py-2 outline-none cursor-pointer shadow-inner transition-colors duration-300">
+                    <option value="pt" selected>PT</option>
+                    <option value="en">EN</option>
+                    <option value="es">ES</option>
+                </select>
+            </div>
+
+            <!-- Botão de Interrupção (Switch Slider) para Modo Claro / Escuro -->
+            <button id="theme-toggle" aria-label="Alternar Tema" class="relative w-14 h-8 rounded-full bg-white/80 dark:bg-darkbg-card border border-brand-subtle/30 dark:border-brand-accent/40 p-1 transition-colors duration-300 flex items-center shadow-inner cursor-pointer shrink-0">
+                <!-- Bolinha do Interrupção -->
+                <div id="switch-thumb" class="w-6 h-6 rounded-full bg-brand-dark dark:bg-brand-accent shadow-md flex items-center justify-center transition-transform duration-300 translate-x-0 dark:translate-x-6 text-white dark:text-brand-dark">
+                    <!-- Ícone Sol -->
+                    <svg id="theme-toggle-light-icon" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" />
+                    </svg>
+                    <!-- Ícone Lua -->
+                    <svg id="theme-toggle-dark-icon" class="hidden w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                    </svg>
+                </div>
+            </button>
+
+            <!-- BOTÃO DE CONTATO 1 (NAVBAR) - escondido no celular, o CTA do final já cobre -->
+            <a href="#contato" data-i18n="nav_contact" class="hidden sm:flex btn-shine group relative px-6 py-2.5 rounded-full bg-gradient-to-r from-brand-accent to-emerald-300 text-brand-dark font-code font-bold text-sm shadow-[0_0_15px_rgba(32,227,189,0.5)] hover:shadow-[0_0_25px_rgba(32,227,189,0.8)] hover:scale-105 active:scale-95 transition-all duration-300 border border-brand-accent/50 items-center gap-2">
+                <span class="relative z-10">Falar Conosco</span>
+                <span class="w-2 h-2 rounded-full bg-brand-dark animate-pulse"></span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- SEÇÃO HERO PINNED -->
+    <div id="hero-wrapper" class="relative w-full h-[100svh] overflow-hidden">
+        <section class="relative w-full h-[100svh] flex items-center justify-center px-4 sm:px-6 overflow-hidden" id="hero">
+
+            <!-- Detalhes Geométricos Tech no Fundo -->
+            <div class="absolute w-[92vw] max-w-5xl h-[72svh] border border-brand-subtle/10 dark:border-brand-accent/15 pointer-events-none flex justify-between p-4 rounded-3xl">
+                <div class="w-4 h-4 border-t-2 border-l-2 border-brand-accent"></div>
+                <div class="w-4 h-4 border-t-2 border-r-2 border-brand-accent"></div>
+            </div>
+
+            <!-- Conteúdo Principal do Hero com Glassmorphism reforçado -->
+            <div class="w-full max-w-4xl mx-auto text-center z-20 hero-content pointer-events-auto will-change-transform bg-white/50 dark:bg-darkbg-card/75 backdrop-blur-sm p-6 sm:p-12 rounded-3xl border border-white/70 dark:border-brand-accent/20 shadow-2xl">
+                <div class="inline-flex items-center gap-2 border border-brand-subtle/40 dark:border-brand-accent/40 px-3 sm:px-4 py-1.5 rounded-full bg-white/80 dark:bg-darkbg-main/80 mb-5 sm:mb-6 font-code text-[10px] sm:text-xs shadow-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-brand-accent animate-ping"></span>
+                    <span class="text-brand-dark dark:text-brand-accent font-bold uppercase tracking-widest">
+                        // DEV_PRESENTATION
+                    </span>
+                </div>
+
+                <h1 class="font-display text-3xl min-[380px]:text-4xl sm:text-7xl font-black tracking-tight mb-4 sm:mb-6 leading-tight text-hero-title">
+                    <span data-i18n="hero_title_1">Conheça a Stack</span> <br><span class="text-hero-highlight">Blackzada.</span>
+                </h1>
+
+                <p data-i18n="hero_subtitle" class="text-base sm:text-2xl text-brand-dark/90 dark:text-gray-200 font-medium mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
+                    Ideias viram código. Código vira resultado.
+                </p>
+
+                <div class="inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-brand-accent text-brand-dark font-code font-bold text-base sm:text-lg glow-effect hover:scale-105 transition-transform">
+                    <span data-i18n="hero_scroll">Role para transformar</span>
+                    <svg class="w-5 h-5 stroke-current stroke-[2.5] shrink-0" fill="none" viewBox="0 0 24 24">
+                        <path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- IMAGEM COM FILTRO DE ILUMINAÇÃO NEON QUE DISFARÇA A QUALIDADE -->
+            <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none hero-bg-logo will-change-transform">
+                <img src="logo_metalizada_sb.png" alt="Logo Stack Blackzada" class="w-[240px] sm:w-[450px] h-auto object-contain hero-img-filter opacity-90">
+            </div>
+
+            <!-- Fundo Gradiente e Vignette para suavizar as bordas da foto -->
+            <div class="absolute inset-0 bg-gradient-to-b from-brand-light/40 via-transparent to-brand-light dark:from-darkbg-main/40 dark:via-transparent dark:to-darkbg-main z-0"></div>
+        </section>
+    </div>
+
+    <!-- SEÇÃO 2: QUEM SOMOS (CARD GRANDE MANTÉM TILT 3D QUE LEVANTA) -->
+    <section class="min-h-[100svh] flex items-center justify-center px-4 sm:px-6 py-16 sm:py-20 relative z-20" id="sobre">
+        <div class="max-w-4xl w-full glass-card tilt-card p-6 pt-14 sm:p-14 rounded-3xl relative overflow-hidden about-card shadow-xl">
+            <!-- Badge Tech do Card -->
+            <div class="absolute top-0 right-0 bg-brand-accent text-brand-dark font-code text-[10px] sm:text-[11px] px-3 sm:px-4 py-1.5 rounded-bl-2xl font-bold tracking-widest uppercase shadow">
+                [ABOUT_US] // 01
+            </div>
+
+            <div class="font-code text-brand-subtle dark:text-brand-accent text-xs sm:text-sm mb-3 sm:mb-4 font-bold tracking-wider">&lt;01_QUEM_SOMOS&gt;</div>
+            <h2 class="font-display text-3xl sm:text-5xl font-black mb-5 sm:mb-6 leading-tight text-brand-dark dark:text-white">
+                <span data-i18n="about_title">A gente transforma ideia em</span> <span class="text-brand-subtle dark:text-brand-accent" data-i18n="about_title_highlight">produto digital.</span>
+            </h2>
+            <p data-i18n="about_desc" class="text-brand-dark/80 dark:text-gray-300 text-base sm:text-xl leading-relaxed mb-6 sm:mb-8">
+                Somos uma equipe de desenvolvimento que cria sites, lojas, sistemas, apps e automações para empresas que querem crescer na internet.
+            </p>
+            <div class="flex flex-wrap gap-2 sm:gap-3 font-code">
+                <span class="px-4 sm:px-5 py-2 rounded-full border border-brand-subtle/30 dark:border-brand-accent/30 text-brand-dark dark:text-gray-200 text-[11px] sm:text-xs font-semibold bg-white/60 dark:bg-darkbg-card/60 uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> <span data-i18n="badge_ideas">IDEIAS</span>
+                </span>
+                <span class="px-4 sm:px-5 py-2 rounded-full border border-brand-subtle/30 dark:border-brand-accent/30 text-brand-dark dark:text-gray-200 text-[11px] sm:text-xs font-semibold bg-white/60 dark:bg-darkbg-card/60 uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> <span data-i18n="badge_code">CÓDIGO</span>
+                </span>
+                <span class="px-4 sm:px-5 py-2 rounded-full border border-brand-subtle/30 dark:border-brand-accent/30 text-brand-dark dark:text-gray-200 text-[11px] sm:text-xs font-semibold bg-white/60 dark:bg-darkbg-card/60 uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-accent"></span> <span data-i18n="badge_results">RESULTADOS</span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO MÉTRICAS / CONTADORES ANIMADOS (NÃO SUBEM) -->
+    <section class="py-12 sm:py-16 px-4 sm:px-6 max-w-5xl mx-auto relative z-20" id="metricas">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 text-center">
+            <div class="glass-card p-4 sm:p-6 rounded-2xl">
+                <div class="font-display text-3xl sm:text-5xl font-black text-brand-subtle dark:text-brand-accent mb-2"><span class="counter" data-target="50">0</span>+</div>
+                <div data-i18n="metric_1" class="font-code text-[11px] sm:text-sm font-semibold uppercase tracking-wider text-brand-dark/80 dark:text-gray-300">Projetos Entregues</div>
+            </div>
+            <div class="glass-card p-4 sm:p-6 rounded-2xl">
+                <div class="font-display text-3xl sm:text-5xl font-black text-brand-subtle dark:text-brand-accent mb-2"><span class="counter" data-target="99">0</span>%</div>
+                <div data-i18n="metric_2" class="font-code text-[11px] sm:text-sm font-semibold uppercase tracking-wider text-brand-dark/80 dark:text-gray-300">Satisfação</div>
+            </div>
+            <div class="glass-card p-4 sm:p-6 rounded-2xl">
+                <div class="font-display text-3xl sm:text-5xl font-black text-brand-subtle dark:text-brand-accent mb-2"><span class="counter" data-target="24">0</span>/7</div>
+                <div data-i18n="metric_3" class="font-code text-[11px] sm:text-sm font-semibold uppercase tracking-wider text-brand-dark/80 dark:text-gray-300">Sistemas no Ar</div>
+            </div>
+            <div class="glass-card p-4 sm:p-6 rounded-2xl">
+                <div class="font-display text-3xl sm:text-5xl font-black text-brand-subtle dark:text-brand-accent mb-2"><span class="counter" data-target="100">0</span>%</div>
+                <div data-i18n="metric_4" class="font-code text-[11px] sm:text-sm font-semibold uppercase tracking-wider text-brand-dark/80 dark:text-gray-300">Código Sob Medida</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 3: O QUE FAZEMOS (NÃO SUBEM) -->
+    <section class="py-16 sm:py-24 px-4 sm:px-6 max-w-6xl mx-auto relative z-20" id="servicos">
+        <div class="text-center mb-10 sm:mb-16">
+            <div class="font-code text-xs text-brand-subtle dark:text-brand-accent tracking-widest mb-1">// SERVICES_MODULE</div>
+            <div class="font-code text-brand-subtle dark:text-brand-accent text-xs sm:text-sm mb-2 font-bold tracking-wider">&lt;02_O_QUE_FAZEMOS&gt;</div>
+            <h2 data-i18n="services_main_title" class="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-brand-dark dark:text-white">Do site ao ecossistema completo</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8">
+            <!-- Card 1: Web -->
+            <div class="glass-card p-6 sm:p-8 rounded-2xl service-card border-l-4 border-l-brand-accent shadow-lg">
+                <div class="flex justify-between items-start mb-5 sm:mb-6">
+                    <div class="h-12 w-12 rounded-xl bg-brand-accent/20 flex items-center justify-center text-brand-dark dark:text-brand-accent">
+                        <svg class="w-6 h-6 stroke-current stroke-2" fill="none" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-code text-[11px] opacity-60 text-brand-subtle dark:text-brand-accent font-bold">MODULE_01</span>
+                </div>
+                <h3 data-i18n="service_1_title" class="font-display text-xl sm:text-2xl font-bold mb-3 text-brand-dark dark:text-white">Sites & Landing Pages</h3>
+                <p data-i18n="service_1_desc" class="text-brand-dark/80 dark:text-gray-300 leading-relaxed">Páginas de alta conversão, design moderno e otimização total de velocidade.</p>
+            </div>
+
+            <!-- Card 2: Lojas Virtuais -->
+            <div class="glass-card p-6 sm:p-8 rounded-2xl service-card border-l-4 border-l-brand-accent shadow-lg">
+                <div class="flex justify-between items-start mb-5 sm:mb-6">
+                    <div class="h-12 w-12 rounded-xl bg-brand-accent/20 flex items-center justify-center text-brand-dark dark:text-brand-accent">
+                        <svg class="w-6 h-6 stroke-current stroke-2" fill="none" viewBox="0 0 24 24">
+                            <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                    <span class="font-code text-[11px] opacity-60 text-brand-subtle dark:text-brand-accent font-bold">MODULE_02</span>
+                </div>
+                <h3 data-i18n="service_2_title" class="font-display text-xl sm:text-2xl font-bold mb-3 text-brand-dark dark:text-white">Lojas Virtuais</h3>
+                <p data-i18n="service_2_desc" class="text-brand-dark/80 dark:text-gray-300 leading-relaxed">E-commerces completos, rápidos e prontos para escalar suas vendas.</p>
+            </div>
+
+            <!-- Card 3: Apps & Sistemas -->
+            <div class="glass-card p-6 sm:p-8 rounded-2xl service-card border-l-4 border-l-brand-accent shadow-lg">
+                <div class="flex justify-between items-start mb-5 sm:mb-6">
+                    <div class="h-12 w-12 rounded-xl bg-brand-accent/20 flex items-center justify-center text-brand-dark dark:text-brand-accent">
+                        <svg class="w-6 h-6 stroke-current stroke-2" fill="none" viewBox="0 0 24 24">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="3"></line>
+                        </svg>
+                    </div>
+                    <span class="font-code text-[11px] opacity-60 text-brand-subtle dark:text-brand-accent font-bold">MODULE_03</span>
+                </div>
+                <h3 data-i18n="service_3_title" class="font-display text-xl sm:text-2xl font-bold mb-3 text-brand-dark dark:text-white">Sistemas & Apps</h3>
+                <p data-i18n="service_3_desc" class="text-brand-dark/80 dark:text-gray-300 leading-relaxed">Plataformas Web sob medida e aplicativos nativos para iOS e Android.</p>
+            </div>
+
+            <!-- Card 4: Automações -->
+            <div class="glass-card p-6 sm:p-8 rounded-2xl service-card border-l-4 border-l-brand-accent shadow-lg">
+                <div class="flex justify-between items-start mb-5 sm:mb-6">
+                    <div class="h-12 w-12 rounded-xl bg-brand-accent/20 flex items-center justify-center text-brand-dark dark:text-brand-accent">
+                        <svg class="w-6 h-6 stroke-current stroke-2" fill="none" viewBox="0 0 24 24">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke-linecap="round" stroke-linejoin="round"></polygon>
+                        </svg>
+                    </div>
+                    <span class="font-code text-[11px] opacity-60 text-brand-subtle dark:text-brand-accent font-bold">MODULE_04</span>
+                </div>
+                <h3 data-i18n="service_4_title" class="font-display text-xl sm:text-2xl font-bold mb-3 text-brand-dark dark:text-white">Automações & Chatbots</h3>
+                <p data-i18n="service_4_desc" class="text-brand-dark/80 dark:text-gray-300 leading-relaxed">Atendimento automático no WhatsApp e fluxos inteligentes que trabalham por você.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 4: COMO TRABALHAMOS -->
+    <section class="py-16 sm:py-24 px-4 sm:px-6 bg-brand-card/60 dark:bg-darkbg-card/50 relative z-20">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10 sm:mb-16">
+                <div class="font-code text-xs text-brand-subtle dark:text-brand-accent tracking-widest mb-1">// WORKFLOW_PROCESS</div>
+                <div class="font-code text-brand-subtle dark:text-brand-accent text-xs sm:text-sm mb-2 font-bold tracking-wider">&lt;03_COMO_TRABALHAMOS&gt;</div>
+                <h2 data-i18n="workflow_main_title" class="font-display text-3xl sm:text-5xl font-black text-brand-dark dark:text-white">Três etapas, um objetivo.</h2>
+            </div>
+
+            <!-- Linha do tempo: o círculo fica centralizado sobre a linha e não invade o texto -->
+            <div class="space-y-10 sm:space-y-12 relative border-l-2 border-brand-subtle/30 dark:border-brand-accent/30 pl-8 sm:pl-12 ml-5 sm:ml-8 timeline-container">
+                <div class="relative timeline-step">
+                    <div class="absolute -left-[51px] sm:-left-[69px] top-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-light dark:bg-darkbg-card border-2 border-brand-accent flex items-center justify-center font-code font-bold text-sm sm:text-base text-brand-dark dark:text-brand-accent shadow">01</div>
+                    <h3 data-i18n="step_1_title" class="font-display text-xl sm:text-2xl font-bold mb-2 text-brand-dark dark:text-white">Ideias</h3>
+                    <p data-i18n="step_1_desc" class="text-brand-dark/80 dark:text-gray-300 leading-relaxed">Entendemos o seu negócio e definimos o que realmente precisa ser construído.</p>
+                </div>
+                <div class="relative timeline-step">
+                    <div class="absolute -left-[51px] sm:-left-[69px] top-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-light dark:bg-darkbg-card border-2 border-brand-accent flex items-center justify-center font-code font-bold text-sm sm:text-base text-brand-dark dark:text-brand-accent shadow">02</div>
+                    <h3 data-i18n="step_2_title" class="font-display text-xl sm:text-2xl font-bold mb-2 text-brand-dark dark:text-white">Código</h3>
+                    <p data-i18n="step_2_desc" class="text-brand-dark/80 dark:text-gray-300 leading-relaxed">Desenvolvemos sob medida, com design cuidadoso e tecnologia atual.</p>
+                </div>
+                <div class="relative timeline-step">
+                    <div class="absolute -left-[51px] sm:-left-[69px] top-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-light dark:bg-darkbg-card border-2 border-brand-accent flex items-center justify-center font-code font-bold text-sm sm:text-base text-brand-dark dark:text-brand-accent shadow">03</div>
+                    <h3 data-i18n="step_3_title" class="font-display text-xl sm:text-2xl font-bold mb-2 text-brand-dark dark:text-white">Resultados</h3>
+                    <p data-i18n="step_3_desc" class="text-brand-dark/80 dark:text-gray-300 leading-relaxed">Colocamos no ar, acompanhamos e ajustamos para o projeto render.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 5: CTA FINAL -->
+    <section class="min-h-[100svh] flex items-center justify-center px-4 sm:px-6 py-16 sm:py-20 relative z-20" id="contato">
+        <div class="w-full max-w-3xl mx-auto text-center cta-box">
+            <span class="font-code text-xs text-brand-subtle dark:text-brand-accent block mb-1">// START_PROJECT</span>
+            <span class="font-code text-brand-subtle dark:text-brand-accent text-xs sm:text-sm uppercase tracking-widest block mb-4 font-bold">&lt;VAMOS_CONVERSAR&gt;</span>
+            <h2 class="font-display text-4xl sm:text-7xl font-black mb-5 sm:mb-6 leading-tight text-brand-dark dark:text-white">
+                <span data-i18n="cta_title_1">Seu projeto começa</span> <span class="text-brand-subtle dark:text-brand-accent" data-i18n="cta_title_highlight">aqui.</span>
+            </h2>
+            <p data-i18n="cta_subtitle" class="text-lg sm:text-xl text-brand-dark/80 dark:text-gray-300 mb-8 leading-relaxed">
+                Conta a sua ideia pra gente. A gente constrói.
+            </p>
+
+            <!-- CONTATOS ADICIONAIS (E-MAIL E INSTAGRAM) -->
+            <div class="flex flex-col sm:flex-row flex-wrap justify-center items-stretch sm:items-center gap-3 sm:gap-4 mb-8 sm:mb-10 font-code text-sm">
+                <a href="mailto:stackblackzada@gmail.com" class="glass-card px-5 py-3 rounded-2xl flex items-center justify-center gap-2 hover:text-brand-subtle dark:hover:text-brand-accent transition-colors">
+                    <svg class="w-4 h-4 shrink-0 text-brand-subtle dark:text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <span class="break-all">stackblackzada@gmail.com</span>
+                </a>
+                <a href="https://instagram.com/stack.blackzada" target="_blank" rel="noopener" class="glass-card px-5 py-3 rounded-2xl flex items-center justify-center gap-2 hover:text-brand-subtle dark:hover:text-brand-accent transition-colors">
+                    <svg class="w-4 h-4 shrink-0 text-brand-subtle dark:text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    <span>@stack.blackzada</span>
+                </a>
+            </div>
+
+            <!-- BOTÃO DE CONTATO 2 (CTA PRINCIPAL VIA EMAIL) -->
+            <a href="mailto:stackblackzada@gmail.com?subject=Iniciar%20Projeto" class="btn-shine group relative inline-flex items-center justify-center gap-3 sm:gap-4 px-8 sm:px-12 py-4 sm:py-5 rounded-full bg-gradient-to-r from-brand-accent via-emerald-400 to-brand-accent bg-[length:200%_auto] text-brand-dark font-code font-extrabold text-lg sm:text-xl glow-effect hover:scale-105 active:scale-95 transition-all duration-300 border-2 border-white/50 dark:border-brand-accent/50 shadow-2xl">
+                <span data-i18n="cta_button">Iniciar Projeto</span>
+                <svg class="w-6 h-6 stroke-current stroke-[2.5] transition-transform duration-300 group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24">
+                    <line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"></line>
+                    <polyline points="12 5 19 12 12 19" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-brand-subtle/20 dark:border-brand-accent/20 text-center text-brand-dark/60 dark:text-gray-400 text-xs sm:text-sm font-code relative z-20">
+        <p>&copy; 2026 Stack Blackzada. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts de Animação, Tradução e Funcionalidades -->
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.config({ force3D: true });
+
+        // Evita "pulos" no hero fixo quando a barra do navegador do celular aparece/some
+        ScrollTrigger.config({ ignoreMobileResize: true });
+
+        // --- DICIONÁRIO DE TRADUÇÃO (PT, EN, ES) ---
+        const translations = {
+            pt: {
+                nav_contact: "Falar Conosco",
+                hero_title_1: "Conheça a Stack",
+                hero_subtitle: "Ideias viram código. Código vira resultado.",
+                hero_scroll: "Role para transformar",
+                about_title: "A gente transforma ideia em",
+                about_title_highlight: "produto digital.",
+                about_desc: "Somos uma equipe de desenvolvimento que cria sites, lojas, sistemas, apps e automações para empresas que querem crescer na internet.",
+                badge_ideas: "IDEIAS",
+                badge_code: "CÓDIGO",
+                badge_results: "RESULTADOS",
+                metric_1: "Projetos Entregues",
+                metric_2: "Satisfação",
+                metric_3: "Sistemas no Ar",
+                metric_4: "Código Sob Medida",
+                services_main_title: "Do site ao ecossistema completo",
+                service_1_title: "Sites & Landing Pages",
+                service_1_desc: "Páginas de alta conversão, design moderno e otimização total de velocidade.",
+                service_2_title: "Lojas Virtuais",
+                service_2_desc: "E-commerces completos, rápidos e prontos para escalar suas vendas.",
+                service_3_title: "Sistemas & Apps",
+                service_3_desc: "Plataformas Web sob medida e aplicativos nativos para iOS e Android.",
+                service_4_title: "Automações & Chatbots",
+                service_4_desc: "Atendimento automático no WhatsApp e fluxos inteligentes que trabalham por você.",
+                workflow_main_title: "Três etapas, um objetivo.",
+                step_1_title: "Ideias",
+                step_1_desc: "Entendemos o seu negócio e definimos o que realmente precisa ser construído.",
+                step_2_title: "Código",
+                step_2_desc: "Desenvolvemos sob medida, com design cuidadoso e tecnologia atual.",
+                step_3_title: "Resultados",
+                step_3_desc: "Colocamos no ar, acompanhamos e ajustamos para o projeto render.",
+                cta_title_1: "Seu projeto começa",
+                cta_title_highlight: "aqui.",
+                cta_subtitle: "Conta a sua ideia pra gente. A gente constrói.",
+                cta_button: "Iniciar Projeto"
+            },
+            en: {
+                nav_contact: "Contact Us",
+                hero_title_1: "Meet Stack",
+                hero_subtitle: "Ideas become code. Code becomes results.",
+                hero_scroll: "Scroll to transform",
+                about_title: "We turn ideas into",
+                about_title_highlight: "digital products.",
+                about_desc: "We are a development team building websites, stores, systems, apps, and automation for companies looking to grow online.",
+                badge_ideas: "IDEAS",
+                badge_code: "CODE",
+                badge_results: "RESULTS",
+                metric_1: "Delivered Projects",
+                metric_2: "Satisfaction",
+                metric_3: "Live Systems",
+                metric_4: "Custom Code",
+                services_main_title: "From website to full ecosystem",
+                service_1_title: "Websites & Landing Pages",
+                service_1_desc: "High-conversion pages, modern design, and total speed optimization.",
+                service_2_title: "Online Stores",
+                service_2_desc: "Complete e-commerce stores, fast and ready to scale your sales.",
+                service_3_title: "Systems & Apps",
+                service_3_desc: "Tailored Web platforms and native apps for iOS and Android.",
+                service_4_title: "Automation & Chatbots",
+                service_4_desc: "Automated WhatsApp support and smart workflows working for you.",
+                workflow_main_title: "Three steps, one goal.",
+                step_1_title: "Ideas",
+                step_1_desc: "We understand your business and define what truly needs to be built.",
+                step_2_title: "Code",
+                step_2_desc: "We develop custom solutions with careful design and modern technology.",
+                step_3_title: "Results",
+                step_3_desc: "We launch, monitor, and fine-tune your project to maximize impact.",
+                cta_title_1: "Your project starts",
+                cta_title_highlight: "here.",
+                cta_subtitle: "Tell us your idea. We build it.",
+                cta_button: "Start Project"
+            },
+            es: {
+                nav_contact: "Contáctanos",
+                hero_title_1: "Conoce Stack",
+                hero_subtitle: "Las ideas se vuelven código. El código se vuelve resultado.",
+                hero_scroll: "Desliza para transformar",
+                about_title: "Transformamos ideas en",
+                about_title_highlight: "productos digitales.",
+                about_desc: "Somos un equipo de desarrollo que crea sitios, tiendas, sistemas, apps y automatizaciones para empresas que quieren crecer en internet.",
+                badge_ideas: "IDEAS",
+                badge_code: "CÓDIGO",
+                badge_results: "RESULTADOS",
+                metric_1: "Proyectos Entregados",
+                metric_2: "Satisfacción",
+                metric_3: "Sistemas en Línea",
+                metric_4: "Código a Medida",
+                services_main_title: "Desde el sitio web hasta el ecosistema completo",
+                service_1_title: "Sitios & Landing Pages",
+                service_1_desc: "Páginas de alta conversión, diseño moderno y optimización total de velocidad.",
+                service_2_title: "Tiendas Virtuales",
+                service_2_desc: "E-commerces completos, rápidos y listos para escalar tus ventas.",
+                service_3_title: "Sistemas & Apps",
+                service_3_desc: "Plataformas Web a medida y aplicaciones nativas para iOS y Android.",
+                service_4_title: "Automatizaciones & Chatbots",
+                service_4_desc: "Atención automática en WhatsApp y flujos inteligentes que trabajan por ti.",
+                workflow_main_title: "Tres etapas, un objetivo.",
+                step_1_title: "Ideas",
+                step_1_desc: "Entendemos tu negocio y definimos lo que realmente se necesita construir.",
+                step_2_title: "Código",
+                step_2_desc: "Desarrollamos a medida, con diseño cuidadoso y tecnología actual.",
+                step_3_title: "Resultados",
+                step_3_desc: "Lo lanzamos, acompañamos y ajustamos para que el proyecto rinda.",
+                cta_title_1: "Tu proyecto comienza",
+                cta_title_highlight: "aquí.",
+                cta_subtitle: "Cuéntanos tu idea. Nosotros la construimos.",
+                cta_button: "Iniciar Proyecto"
+            }
+        };
+
+        const languageSelect = document.getElementById('language-select');
+
+        function setLanguage(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        languageSelect.addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+
+        const savedLang = localStorage.getItem('preferred-language') || 'pt';
+        languageSelect.value = savedLang;
+        setLanguage(savedLang);
+
+        // --- 1. LÓGICA DO INTERRUPTOR DE MODO CLARO / ESCURO ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        function updateThemeUI() {
+            if (document.documentElement.classList.contains('dark')) {
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            } else {
+                lightIcon.classList.remove('hidden');
+                darkIcon.classList.add('hidden');
+            }
+        }
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        updateThemeUI();
+
+        themeToggleBtn.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark');
+
+            if (document.documentElement.classList.contains('dark')) {
+                localStorage.setItem('color-theme', 'dark');
+            } else {
+                localStorage.setItem('color-theme', 'light');
+            }
+            updateThemeUI();
+        });
+
+        // --- 2. SPOTLIGHT EM TODOS OS CARDS + TILT SOMENTE NO CARD "QUEM SOMOS" (tilt-card) ---
+        // Só roda com mouse; no toque não faz nada (evita efeito travado no celular)
+        const hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+        if (hasMouse) {
+            document.querySelectorAll('.glass-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    card.style.setProperty('--x', `${x}px`);
+                    card.style.setProperty('--y', `${y}px`);
+
+                    if (card.classList.contains('tilt-card')) {
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -6;
+                        const rotateY = ((x - centerX) / centerX) * 6;
+
+                        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    if (card.classList.contains('tilt-card')) {
+                        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+                    }
+                });
+            });
+        }
+
+        // --- 3. CONTADORES NUMÉRICOS ANIMADOS ---
+        ScrollTrigger.create({
+            trigger: "#metricas",
+            start: "top 80%",
+            once: true,
+            onEnter: () => {
+                document.querySelectorAll('.counter').forEach(counter => {
+                    const target = +counter.getAttribute('data-target');
+                    gsap.to(counter, {
+                        innerText: target,
+                        duration: 2,
+                        snap: { innerText: 1 },
+                        ease: "power2.out"
+                    });
+                });
+            }
+        });
+
+        // --- 4. OCULTAR/MOSTRAR NAVBAR NO SCROLL ---
+        let lastScrollY = window.scrollY;
+        const navbar = document.getElementById('navbar');
+
+        ScrollTrigger.create({
+            onUpdate: (self) => {
+                const currentScrollY = self.scroll();
+                if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                    navbar.classList.add('-translate-y-full');
+                } else {
+                    navbar.classList.remove('-translate-y-full');
+                }
+                lastScrollY = currentScrollY;
+            }
+        });
+
+        // --- 5. ANIMAÇÃO HERO PINNED ---
+        const heroTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#hero-wrapper",
+                start: "top top",
+                end: "+=120%",
+                scrub: 0.5,
+                pin: true,
+                anticipatePin: 1
+            }
+        });
+
+        heroTl.to(".hero-content", {
+            scale: 0.85,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power1.inOut"
+        }, 0);
+
+        heroTl.to(".hero-bg-logo", {
+            scale: 6,
+            rotation: 180,
+            opacity: 1,
+            duration: 1.5,
+            ease: "power1.inOut"
+        }, 0);
+
+        heroTl.to(".hero-bg-logo", {
+            opacity: 0,
+            duration: 0.5,
+            ease: "power1.out"
+        }, ">-0.3");
+
+        // --- 6. ANIMAÇÕES DE ENTRADA DAS SEÇÕES ---
+        gsap.from(".about-card", {
+            scrollTrigger: {
+                trigger: "#sobre",
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+            },
+            y: 40,
+            opacity: 0,
+            duration: 1,
+            ease: "power2.out"
+        });
+
+        gsap.from(".service-card", {
+            scrollTrigger: {
+                trigger: "#servicos",
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+            },
+            y: 40,
+            opacity: 0,
+            stagger: 0.15,
+            duration: 0.8,
+            ease: "power2.out"
+        });
+
+        gsap.from(".timeline-step", {
+            scrollTrigger: {
+                trigger: ".timeline-container",
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+            },
+            x: -30,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 0.8,
+            ease: "power2.out"
+        });
+
+        gsap.from(".cta-box", {
+            scrollTrigger: {
+                trigger: "#contato",
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+            },
+            scale: 0.9,
+            opacity: 0,
+            duration: 1,
+            ease: "power2.out"
+        });
+    </script>
+</body>
+</html>
