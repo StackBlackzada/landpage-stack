@@ -112,26 +112,30 @@ export default function Footer() {
                             </li>
                             <li>
                                 <a
-                                    href="#"
+                                    href="https://www.linkedin.com/in/caio-daniel-45b531319/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="hover:text-brand-accent transition-colors flex items-center gap-2"
                                 >
-                                    <span>💼 LinkedIn: [PREENCHER: link corporativo]</span>
+                                    <span>💼 LinkedIn: Caio Daniel</span>
                                 </a>
                             </li>
                             <li>
                                 <a
-                                    href="#"
+                                    href="https://github.com/StackBlackzada/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="hover:text-brand-accent transition-colors flex items-center gap-2"
                                 >
-                                    <span>🐙 GitHub: [PREENCHER: organização GitHub]</span>
+                                    <span>🐙 GitHub: @StackBlackzada</span>
                                 </a>
                             </li>
                         </ul>
 
                         <div className="font-code text-[11px] text-gray-400 border-t border-gray-800 pt-3 space-y-1">
-                            <div>[PREENCHER: Razão Social da Empresa]</div>
-                            <div>[PREENCHER: CNPJ: 00.000.000/0001-00]</div>
-                            <div>[PREENCHER: Cidade / UF - Brasil]</div>
+                            <div className="font-bold text-gray-300">Stack Blackzada Software & IA</div>
+                            <div>Sede: Goiânia / GO - Brasil</div>
+                            <div className="text-[10px] text-brand-accent">Atendimento presencial & remoto nacional</div>
                         </div>
                     </div>
                 </div>

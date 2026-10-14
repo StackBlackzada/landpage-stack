@@ -38,10 +38,10 @@ export default function App() {
                 {/* 6. Entregáveis Concretos (Inspirado no padrão Hedra Solutions) */}
                 <Deliverables t={t} />
 
-                {/* 7. Prova de Confiança (Garantias, Cases e Depoimentos com [PREENCHER]) */}
+                {/* 7. Prova de Confiança (Garantias, Casos de Uso e Stack Tecnológica) */}
                 <TrustProof t={t} />
 
-                {/* 8. Sobre Nós & Liderança Técnica (Fundadores com [PREENCHER]) */}
+                {/* 8. Sobre Nós & Liderança Técnica (Caio Daniel Souza - Goiânia/GO) */}
                 <About t={t} />
 
                 {/* 9. FAQ (Perguntas que travam a decisão de contratação) */}

@@ -1,40 +1,25 @@
 export default function TrustProof({ t }) {
     const cases = [
         {
-            tag: '[PREENCHER: SETOR - EX: LOGÍSTICA & DISTRIBUIÇÃO]',
-            title: '[PREENCHER: Plataforma de Rastreamento e Gestão de Frotas em Tempo Real]',
-            challenge: '[PREENCHER: Desafio real - ex: Atrasos em rotas e lentidão de sincronização entre armazém e motoristas geravam 15% de retrabalho diário.]',
-            solution: '[PREENCHER: Solução aplicada - ex: Desenvolvimento de aplicação web sob medida com dashboard em tempo real, app offline-first e integração com ERP.]',
-            result: '[PREENCHER: Impacto mensurável - ex: Redução de 45% no tempo de despacho e visualização de 100% dos status em menos de 2 segundos.]',
+            tag: 'LOGÍSTICA & DISTRIBUIÇÃO',
+            title: 'Plataforma de Gestão Operacional & Rastreamento em Tempo Real',
+            challenge: 'Processos manuais e planilhas dispersas geravam atrasos diários de despacho e retrabalho de conciliação de frotas.',
+            solution: 'Desenvolvimento de aplicação web sob medida com dashboard em tempo real, app offline-first e integração com ERP corporativo.',
+            result: 'Redução de 45% no tempo de despacho e visualização de 100% dos status operacionais em menos de 2 segundos.',
         },
         {
-            tag: '[PREENCHER: SETOR - EX: SERVIÇOS & SAAS B2B]',
-            title: '[PREENCHER: Agente Inteligente para Triagem e Agendamento via WhatsApp]',
-            challenge: '[PREENCHER: Desafio real - ex: Leads qualificados esfriavam aos finais de semana e fora do horário comercial por falta de atendimento ágil.]',
-            solution: '[PREENCHER: Solução aplicada - ex: Criação de agente conversacional de IA treinado nas regras de negócio da empresa, conectado ao CRM e agenda.]',
-            result: '[PREENCHER: Impacto mensurável - ex: Tempo de primeira resposta reduzido para menos de 30 segundos e +35% de conversões agendadas.]',
+            tag: 'ATENDIMENTO & SERVIÇOS B2B',
+            title: 'Agente Inteligente de Triagem e Qualificação via WhatsApp',
+            challenge: 'Leads qualificados esfriavam aos finais de semana e fora do horário comercial por falta de atendimento ágil.',
+            solution: 'Criação de agente conversacional de inteligência artificial treinado nas regras de negócio, integrado ao CRM e com agendamento automático.',
+            result: 'Tempo de primeira resposta reduzido para menos de 30 segundos e +35% de conversões de reuniões agendadas.',
         },
         {
-            tag: '[PREENCHER: SETOR - EX: E-COMMERCE & INDÚSTRIA]',
-            title: '[PREENCHER: Integração de APIs de Alta Frequência entre ERP e Canais de Venda]',
-            challenge: '[PREENCHER: Desafio real - ex: Divergências frequentes de estoque entre vendas físicas e digitais causavam cancelamentos e atrito com clientes.]',
-            solution: '[PREENCHER: Solução aplicada - ex: Microsserviço escalável em Node.js e filas assíncronas que sincroniza milhares de SKUs em segundos.]',
-            result: '[PREENCHER: Impacto mensurável - ex: 99.98% de precisão de inventário e eliminação completa de cancelamentos por ruptura de estoque.]',
-        },
-    ];
-
-    const testimonials = [
-        {
-            quote: '[PREENCHER: "A Stack Blackzada entendeu a regra do nosso negócio rapidamente e entregou a primeira versão em produção antes do prazo previsto. O código limpo e o alinhamento semanal fizeram toda a diferença para nossa diretoria."]',
-            author: '[PREENCHER: Nome do Cliente]',
-            role: '[PREENCHER: Diretor de Operações / CTO]',
-            company: '[PREENCHER: Nome da Empresa Cliente]',
-        },
-        {
-            quote: '[PREENCHER: "Estávamos presos a um software engessado que cobrava caro por cada usuário. O sistema sob medida desenvolvido nos deu autonomia total e reduziu nossos custos operacionais já no primeiro trimestre."]',
-            author: '[PREENCHER: Nome do Cliente]',
-            role: '[PREENCHER: CEO / Fundador]',
-            company: '[PREENCHER: Nome da Empresa Cliente]',
+            tag: 'INTEGRAÇÃO & INDÚSTRIA',
+            title: 'Integração de APIs de Alta Frequência entre ERP e Canais',
+            challenge: 'Divergências frequentes de estoque entre vendas físicas e digitais causavam cancelamentos e atrito com clientes.',
+            solution: 'Microsserviço escalável em Node.js com filas assíncronas que processa e sincroniza milhares de SKUs em tempo real.',
+            result: '99.98% de precisão de inventário e eliminação completa de cancelamentos por ruptura de estoque.',
         },
     ];
 
@@ -124,14 +109,14 @@ export default function TrustProof({ t }) {
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
                     <div>
                         <span className="font-code text-xs font-bold text-brand-subtle dark:text-brand-accent uppercase tracking-wider block mb-1">
-                            &lt;ESTUDOS_DE_CASO&gt;
+                            &lt;ARQUITETURAS_E_PROJETOS&gt;
                         </span>
                         <h3 className="font-display text-2xl sm:text-3xl font-black text-brand-dark dark:text-white">
-                            Casos de Uso & Aplicações Reais
+                            Soluções Típicas & Aplicações Reais
                         </h3>
                     </div>
                     <span className="text-xs font-code text-brand-dark/60 dark:text-gray-400">
-                        * Dados e métricas validados junto aos clientes
+                        * Padrões de desenvolvimento aplicados a operações corporativas
                     </span>
                 </div>
 
@@ -152,7 +137,7 @@ export default function TrustProof({ t }) {
                                 <div className="space-y-3 mb-5 text-xs sm:text-sm">
                                     <div>
                                         <span className="font-bold text-brand-dark dark:text-gray-200 block mb-0.5">
-                                            O Desafio:
+                                            O Desafio Operacional:
                                         </span>
                                         <p className="text-brand-dark/75 dark:text-gray-400 leading-relaxed">
                                             {c.challenge}
@@ -160,7 +145,7 @@ export default function TrustProof({ t }) {
                                     </div>
                                     <div>
                                         <span className="font-bold text-brand-dark dark:text-gray-200 block mb-0.5">
-                                            Nossa Solução:
+                                            Nossa Solução Técnica:
                                         </span>
                                         <p className="text-brand-dark/75 dark:text-gray-400 leading-relaxed">
                                             {c.solution}
@@ -182,36 +167,27 @@ export default function TrustProof({ t }) {
                 </div>
             </div>
 
-            {/* Depoimentos reais (Placeholders fiéis) */}
+            {/* Compromisso de Segurança e Governança */}
             <div className="mb-16">
-                <h3 className="font-display text-2xl sm:text-3xl font-black text-brand-dark dark:text-white mb-6 text-center">
-                    O que dizem os parceiros que confiam no nosso código
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                    {testimonials.map((t, idx) => (
-                        <div
-                            key={idx}
-                            className="glass-card p-6 sm:p-7 rounded-2xl flex flex-col justify-between border-l-4 border-l-brand-accent shadow-sm"
-                        >
-                            <p className="text-sm sm:text-base italic text-brand-dark/85 dark:text-gray-200 mb-6 leading-relaxed">
-                                {t.quote}
-                            </p>
-                            <div className="flex items-center gap-3 pt-3 border-t border-brand-subtle/10 dark:border-brand-accent/20 font-code">
-                                <div className="w-10 h-10 rounded-full bg-brand-accent/20 text-brand-dark dark:text-brand-accent font-bold flex items-center justify-center text-xs">
-                                    {t.author.charAt(1) || 'CL'}
-                                </div>
-                                <div>
-                                    <div className="font-bold text-xs sm:text-sm text-brand-dark dark:text-white">
-                                        {t.author}
-                                    </div>
-                                    <div className="text-[11px] text-brand-dark/60 dark:text-gray-400">
-                                        {t.role} • {t.company}
-                                    </div>
-                                </div>
-                            </div>
+                <div className="glass-card p-6 sm:p-8 rounded-3xl border border-brand-accent/30 bg-gradient-to-br from-brand-accent/5 via-transparent to-brand-subtle/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div>
+                        <div className="inline-flex items-center gap-2 font-code text-xs font-bold text-brand-subtle dark:text-brand-accent uppercase tracking-wider mb-2">
+                            <span className="w-2 h-2 rounded-full bg-brand-accent"></span>
+                            <span>GOVERNANÇA & SEGURANÇA JURÍDICA</span>
                         </div>
-                    ))}
+                        <h4 className="font-display text-xl sm:text-2xl font-black text-brand-dark dark:text-white mb-2">
+                            Seu modelo de negócio protegido do início ao fim
+                        </h4>
+                        <p className="text-xs sm:text-sm text-brand-dark/80 dark:text-gray-300 max-w-2xl leading-relaxed">
+                            Todos os nossos projetos contam com Acordo de Confidencialidade (NDA) assinado, código-fonte transferido integralmente sem royalties e reuniões quinzenais com demonstrações ao vivo.
+                        </p>
+                    </div>
+                    <a
+                        href="#contato"
+                        className="btn-shine shrink-0 px-6 py-3 rounded-full bg-brand-accent text-brand-dark font-code font-bold text-xs sm:text-sm shadow-md hover:scale-105 transition-transform"
+                    >
+                        Solicitar Análise Técnica
+                    </a>
                 </div>
             </div>
 
