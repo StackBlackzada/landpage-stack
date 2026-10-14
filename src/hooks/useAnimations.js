@@ -5,15 +5,13 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 gsap.config({ force3D: true });
 
-// Evita "pulos" no hero fixo quando a barra do navegador do celular aparece/some
 ScrollTrigger.config({ ignoreMobileResize: true });
 
 export default function useAnimations() {
     useEffect(() => {
         const cleanups = [];
 
-        // --- 2. SPOTLIGHT EM TODOS OS CARDS + TILT SOMENTE NO CARD "QUEM SOMOS" (tilt-card) ---
-        // Só roda com mouse; no toque não faz nada (evita efeito travado no celular)
+        // 1. SPOTLIGHT DINÂMICO NOS GLASS CARDS (apenas dispositivos com mouse)
         const hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
         if (hasMouse) {
@@ -29,17 +27,19 @@ export default function useAnimations() {
                     if (card.classList.contains('tilt-card')) {
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;
-                        const rotateX = ((y - centerY) / centerY) * -6;
-                        const rotateY = ((x - centerX) / centerX) * 6;
+                        const rotateX = ((y - centerY) / centerY) * -5;
+                        const rotateY = ((x - centerX) / centerX) * 5;
 
-                        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+                        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(8px)`;
                     }
                 };
+
                 const onLeave = () => {
                     if (card.classList.contains('tilt-card')) {
                         card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
                     }
                 };
+
                 card.addEventListener('mousemove', onMove);
                 card.addEventListener('mouseleave', onLeave);
                 cleanups.push(() => {
@@ -50,121 +50,126 @@ export default function useAnimations() {
         }
 
         const ctx = gsap.context(() => {
-            // --- 3. CONTADORES NUMÉRICOS ANIMADOS ---
-            ScrollTrigger.create({
-                trigger: '#metricas',
-                start: 'top 80%',
-                once: true,
-                onEnter: () => {
-                    document.querySelectorAll('.counter').forEach((counter) => {
-                        const target = +counter.getAttribute('data-target');
-                        gsap.to(counter, {
-                            innerText: target,
-                            duration: 2,
-                            snap: { innerText: 1 },
-                            ease: 'power2.out',
-                        });
-                    });
-                },
-            });
-
-            // --- 4. OCULTAR/MOSTRAR NAVBAR NO SCROLL ---
+            // 2. OCULTAR/MOSTRAR NAVBAR INTELIGENTE NO SCROLL
             let lastScrollY = window.scrollY;
             const navbar = document.getElementById('navbar');
 
-            ScrollTrigger.create({
-                onUpdate: (self) => {
-                    const currentScrollY = self.scroll();
-                    if (currentScrollY > lastScrollY && currentScrollY > 80) {
-                        navbar.classList.add('-translate-y-full');
-                    } else {
-                        navbar.classList.remove('-translate-y-full');
-                    }
-                    lastScrollY = currentScrollY;
-                },
-            });
+            if (navbar) {
+                ScrollTrigger.create({
+                    onUpdate: (self) => {
+                        const currentScrollY = self.scroll();
+                        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                            navbar.classList.add('-translate-y-full');
+                        } else {
+                            navbar.classList.remove('-translate-y-full');
+                        }
+                        lastScrollY = currentScrollY;
+                    },
+                });
+            }
 
-            // --- 5. ANIMAÇÃO HERO PINNED ---
-            const heroTl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: '#hero-wrapper',
-                    start: 'top top',
-                    end: '+=120%',
-                    scrub: 0.5,
-                    pin: true,
-                    anticipatePin: 1,
-                },
-            });
-
-            heroTl.to('.hero-content', {
-                scale: 0.85,
+            // 3. ENTRADA SUAVE DO HERO
+            gsap.from('.hero-content', {
+                y: 30,
                 opacity: 0,
-                duration: 0.8,
-                ease: 'power1.inOut',
-            }, 0);
-
-            heroTl.to('.hero-bg-logo', {
-                scale: 6,
-                rotation: 180,
-                opacity: 1,
-                duration: 1.5,
-                ease: 'power1.inOut',
-            }, 0);
-
-            heroTl.to('.hero-bg-logo', {
-                opacity: 0,
-                duration: 0.5,
-                ease: 'power1.out',
-            }, '>-0.3');
-
-            // --- 6. ANIMAÇÕES DE ENTRADA DAS SEÇÕES ---
-            gsap.from('.about-card', {
-                scrollTrigger: {
-                    trigger: '#sobre',
-                    start: 'top 80%',
-                    toggleActions: 'play none none reverse',
-                },
-                y: 40,
-                opacity: 0,
-                duration: 1,
+                duration: 0.9,
                 ease: 'power2.out',
             });
 
+            // 4. ANIMAÇÕES DE ENTRADA DAS SEÇÕES
+            // Problema vs Solução
+            gsap.from('#problema-solucao .glass-card', {
+                scrollTrigger: {
+                    trigger: '#problema-solucao',
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse',
+                },
+                y: 35,
+                opacity: 0,
+                stagger: 0.15,
+                duration: 0.7,
+                ease: 'power2.out',
+            });
+
+            // Serviços
             gsap.from('.service-card', {
                 scrollTrigger: {
                     trigger: '#servicos',
-                    start: 'top 80%',
+                    start: 'top 85%',
                     toggleActions: 'play none none reverse',
                 },
-                y: 40,
+                y: 35,
                 opacity: 0,
                 stagger: 0.15,
-                duration: 0.8,
+                duration: 0.7,
                 ease: 'power2.out',
             });
 
+            // Linha do tempo (Como trabalhamos)
             gsap.from('.timeline-step', {
                 scrollTrigger: {
                     trigger: '.timeline-container',
-                    start: 'top 80%',
+                    start: 'top 85%',
                     toggleActions: 'play none none reverse',
                 },
-                x: -30,
+                x: -25,
                 opacity: 0,
-                stagger: 0.2,
+                stagger: 0.15,
+                duration: 0.6,
+                ease: 'power2.out',
+            });
+
+            // Entregáveis
+            gsap.from('#entregaveis .glass-card', {
+                scrollTrigger: {
+                    trigger: '#entregaveis',
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse',
+                },
+                y: 30,
+                opacity: 0,
+                stagger: 0.1,
+                duration: 0.6,
+                ease: 'power2.out',
+            });
+
+            // Prova de Confiança e Cases
+            gsap.from('#prova-de-confianca .glass-card', {
+                scrollTrigger: {
+                    trigger: '#prova-de-confianca',
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse',
+                },
+                y: 30,
+                opacity: 0,
+                stagger: 0.12,
+                duration: 0.6,
+                ease: 'power2.out',
+            });
+
+            // Sobre / Time
+            gsap.from('.about-card', {
+                scrollTrigger: {
+                    trigger: '#sobre',
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse',
+                },
+                y: 30,
+                opacity: 0,
                 duration: 0.8,
                 ease: 'power2.out',
             });
 
+            // Formulário / Contato
             gsap.from('.cta-box', {
                 scrollTrigger: {
                     trigger: '#contato',
-                    start: 'top 80%',
+                    start: 'top 85%',
                     toggleActions: 'play none none reverse',
                 },
-                scale: 0.9,
+                scale: 0.96,
                 opacity: 0,
-                duration: 1,
+                duration: 0.8,
                 ease: 'power2.out',
             });
         });
