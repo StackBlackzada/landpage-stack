@@ -102,7 +102,7 @@ export default function Contact({ t }) {
                                 </p>
                                 <div className="space-y-3">
                                     <a
-                                        href={`https://wa.me/5500000000000?text=${whatsappText}`}
+                                        href={`https://wa.me/5564999818481?text=${whatsappText}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn-shine inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white font-code font-bold text-sm shadow-md"
@@ -273,7 +273,7 @@ export default function Contact({ t }) {
                                 Fale diretamente com nossa liderança técnica pelo WhatsApp para esclarecer dúvidas rápidas.
                             </p>
                             <a
-                                href={`https://wa.me/5500000000000?text=${whatsappText}`}
+                                href={`https://wa.me/5564999818481?text=${whatsappText}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-code font-bold text-xs sm:text-sm transition-colors shadow-sm"

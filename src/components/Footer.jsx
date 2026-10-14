@@ -75,12 +75,12 @@ export default function Footer() {
                             <li>
                                 <span className="text-gray-400 block text-[10px] uppercase">WhatsApp:</span>
                                 <a
-                                    href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20um%20especialista%20da%20Stack%20Blackzada."
+                                    href="https://wa.me/5564999818481?text=Ol%C3%A1!%20Gostaria%20de%20falar%20com%20um%20especialista%20da%20Stack%20Blackzada."
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="hover:text-brand-accent transition-colors"
                                 >
-                                    [PREENCHER: +55 (11) 90000-0000]
+                                    +55 (64) 99981-8481
                                 </a>
                             </li>
                             <li>

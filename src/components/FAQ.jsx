@@ -111,7 +111,7 @@ export default function FAQ({ t }) {
                         Não encontrou a resposta para sua dúvida?{' '}
                     </span>
                     <a
-                        href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20desenvolvimento%20de%20software%20com%20a%20Stack%20Blackzada."
+                        href="https://wa.me/5564999818481?text=Ol%C3%A1!%20Gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20desenvolvimento%20de%20software%20com%20a%20Stack%20Blackzada."
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-bold text-brand-subtle dark:text-brand-accent hover:underline inline-flex items-center gap-1"
