@@ -1,6 +1,40 @@
 import { useState } from 'react';
 
-// Função para aplicar máscara de telefone brasileiro em tempo real
+// Conjunto oficial de todos os 67 DDDs válidos do Brasil (ANATEL)
+const VALID_DDDS = new Set([
+    11, 12, 13, 14, 15, 16, 17, 18, 19, // SP
+    21, 22, 24,                         // RJ
+    27, 28,                             // ES
+    31, 32, 33, 34, 35, 37, 38,         // MG
+    41, 42, 43, 44, 45, 46,             // PR
+    47, 48, 49,                         // SC
+    51, 53, 54, 55,                     // RS
+    61,                                 // DF
+    62, 64,                             // GO
+    63,                                 // TO
+    65, 66,                             // MT
+    67,                                 // MS
+    68,                                 // AC
+    69,                                 // RO
+    71, 73, 74, 75, 77,                 // BA
+    79,                                 // SE
+    81, 87,                             // PE
+    82,                                 // AL
+    83,                                 // PB
+    84,                                 // RN
+    85, 88,                             // CE
+    86, 89,                             // PI
+    91, 93, 94,                         // PA
+    92, 97,                             // AM
+    95,                                 // RR
+    96,                                 // AP
+    98, 99                              // MA
+]);
+
+// Expressão regular para detecção de emojis e símbolos gráficos
+const EMOJI_REGEX = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+
+// Máscara de telefone brasileiro em tempo real
 function maskPhone(value) {
     const digits = value.replace(/\D/g, '').slice(0, 11);
     if (digits.length === 0) return '';
@@ -10,17 +44,119 @@ function maskPhone(value) {
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
 }
 
-// Validação real de telefone com DDD do Brasil
-function validatePhone(phone) {
+// 1. Validação estrita de Nome (Padrão QA)
+function validateName(name) {
+    const trimmed = name.trim();
+    if (!trimmed) return 'Por favor, informe seu nome.';
+    if (EMOJI_REGEX.test(trimmed)) return 'O nome não pode conter emojis ou símbolos gráficos.';
+    if (/\d/.test(trimmed)) return 'O nome não pode conter números.';
+    if (!/^[a-zA-ZÀ-ÿ\s'.-]+$/.test(trimmed)) return 'O nome contém caracteres especiais inválidos.';
+    
+    // Deve ter pelo menos 2 palavras (Nome e Sobrenome)
+    const parts = trimmed.split(/\s+/).filter((p) => p.length > 0);
+    if (parts.length < 2) {
+        return 'Por favor, informe seu nome completo (nome e sobrenome).';
+    }
+    // Cada palavra deve ter no mínimo 2 letras
+    if (parts.some((p) => p.length < 2)) {
+        return 'Cada parte do nome deve ter pelo menos 2 letras.';
+    }
+    // Cada parte do nome deve ter ao menos 1 vogal (elimina teclado batido como "asdfghj zxcvbnm")
+    const vowelRegex = /[aeiouyáéíóúâêîôûãõäëïöüAEIOUYÁÉÍÓÚÂÊÎÔÛÃÕÄËÏÖÜ]/;
+    if (parts.some((p) => !vowelRegex.test(p))) {
+        return 'Por favor, informe um nome real válido.';
+    }
+    // Rejeita sequências repetidas como "aaaa", "zzzz"
+    if (/(.)\1{3,}/.test(trimmed.toLowerCase())) {
+        return 'O nome contém repetições inválidas de letras.';
+    }
+    return null;
+}
+
+// 2. Validação estrita de WhatsApp (Padrão QA e ANATEL)
+function validateWhatsApp(phone) {
     const digits = phone.replace(/\D/g, '');
-    if (digits.length < 10 || digits.length > 11) return false;
+    if (!digits) return 'Por favor, informe seu WhatsApp com DDD.';
+    if (digits.length !== 11) {
+        return 'O WhatsApp deve ter exatamente 11 dígitos com DDD (ex: 64 99981-8481).';
+    }
     const ddd = parseInt(digits.slice(0, 2), 10);
-    if (ddd < 11 || ddd > 99) return false;
-    // Rejeita sequências repetidas como 11111111111, 00000000000
-    if (/^(\d)\1+$/.test(digits)) return false;
-    // Se tiver 11 dígitos, o celular deve começar com 9
-    if (digits.length === 11 && digits[2] !== '9') return false;
-    return true;
+    if (!VALID_DDDS.has(ddd)) {
+        return `DDD (${digits.slice(0, 2)}) não é um DDD válido no Brasil.`;
+    }
+    // Celulares no Brasil sempre começam com 9 após o DDD
+    if (digits[2] !== '9') {
+        return 'O número de celular deve começar com o dígito 9 logo após o DDD.';
+    }
+    // Rejeita números onde todos os dígitos são iguais (ex: 11111111111, 99999999999)
+    if (/^(\d)\1+$/.test(digits)) {
+        return 'Número de WhatsApp inválido (todos os dígitos iguais).';
+    }
+    // Rejeita os 8 dígitos finais idênticos (ex: 99999999, 00000000)
+    const phoneBody = digits.slice(3);
+    if (/^(\d)\1{7}$/.test(phoneBody)) {
+        return 'Número de WhatsApp inválido (dígitos repetidos).';
+    }
+    // Rejeita sequências clássicas de teste como 12345678 ou 87654321
+    if (phoneBody === '12345678' || phoneBody === '87654321') {
+        return 'Número de WhatsApp inválido (sequência óbvia de teste).';
+    }
+    return null;
+}
+
+// 3. Validação de E-mail (OPCIONAL, mas rigoroso se preenchido)
+function validateEmail(email) {
+    const trimmed = email.trim();
+    if (!trimmed) return null; // E-mail é 100% opcional!
+    if (EMOJI_REGEX.test(trimmed)) return 'O e-mail não pode conter emojis.';
+    if (/\s/.test(trimmed)) return 'O e-mail não pode conter espaços em branco.';
+    if (/\.\./.test(trimmed)) return 'O e-mail não pode conter pontos consecutivos.';
+    
+    // Validação de formato RFC com usuário, arroba, domínio e TLD de pelo menos 2 letras
+    const rfcRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!rfcRegex.test(trimmed)) {
+        return 'Formato de e-mail inválido (ex: contato@suaempresa.com.br).';
+    }
+    const [user, domain] = trimmed.split('@');
+    if (user.length < 2) return 'O nome de usuário do e-mail é muito curto.';
+    const domainParts = domain.split('.');
+    if (domainParts[0].length < 2) return 'O domínio do e-mail é inválido.';
+    return null;
+}
+
+// 4. Validação de Empresa (Opcional, mas valida se preenchido)
+function validateCompany(company) {
+    const trimmed = company.trim();
+    if (!trimmed) return null;
+    if (EMOJI_REGEX.test(trimmed) && !/[a-zA-Z0-9]/.test(trimmed)) {
+        return 'O nome da empresa não pode conter apenas emojis.';
+    }
+    if (trimmed.length < 2) {
+        return 'O nome da empresa deve ter pelo menos 2 caracteres.';
+    }
+    if (/^\d+$/.test(trimmed)) {
+        return 'O nome da empresa deve conter letras, não apenas números.';
+    }
+    if (/(.)\1{3,}/.test(trimmed.toLowerCase())) {
+        return 'Nome da empresa contém caracteres repetidos inválidos.';
+    }
+    return null;
+}
+
+// 5. Validação de Mensagem (Opcional, mas valida se preenchido)
+function validateMessage(message) {
+    const trimmed = message.trim();
+    if (!trimmed) return null;
+    if (trimmed.length < 5) {
+        return 'Se preenchida, descreva sua necessidade com pelo menos 5 caracteres.';
+    }
+    if (EMOJI_REGEX.test(trimmed) && !/[a-zA-Z0-9]/.test(trimmed)) {
+        return 'A mensagem deve conter texto legível.';
+    }
+    if (/^(.)\1+$/.test(trimmed)) {
+        return 'Por favor, descreva sua necessidade com palavras reais.';
+    }
+    return null;
 }
 
 const serviceLabels = {
@@ -42,55 +178,78 @@ export default function Contact({ t }) {
     });
 
     const [errors, setErrors] = useState({});
-    const [status, setStatus] = useState('idle'); // idle | submitting | success
+    const [touched, setTouched] = useState({});
+    const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+
+    // Validação individual por campo
+    const validateField = (fieldName, value) => {
+        switch (fieldName) {
+            case 'name':
+                return validateName(value);
+            case 'whatsapp':
+                return validateWhatsApp(value);
+            case 'email':
+                return validateEmail(value);
+            case 'company':
+                return validateCompany(value);
+            case 'message':
+                return validateMessage(value);
+            default:
+                return null;
+        }
+    };
 
     const handlePhoneChange = (e) => {
         const masked = maskPhone(e.target.value);
         setFormData((prev) => ({ ...prev, whatsapp: masked }));
-        if (errors.whatsapp) {
-            setErrors((prev) => ({ ...prev, whatsapp: null }));
+        if (touched.whatsapp) {
+            const err = validateWhatsApp(masked);
+            setErrors((prev) => ({ ...prev, whatsapp: err }));
         }
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors((prev) => ({ ...prev, [name]: null }));
+        if (touched[name]) {
+            const err = validateField(name, value);
+            setErrors((prev) => ({ ...prev, [name]: err }));
         }
     };
 
-    const validateForm = () => {
-        const newErrors = {};
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        setTouched((prev) => ({ ...prev, [name]: true }));
+        const err = validateField(name, value);
+        setErrors((prev) => ({ ...prev, [name]: err }));
+    };
 
-        // 1. Validação de Nome: Mínimo 3 caracteres com letras reais
-        const trimmedName = formData.name.trim();
-        if (!trimmedName) {
-            newErrors.name = 'Por favor, informe seu nome.';
-        } else if (trimmedName.length < 3 || !/[a-zA-ZÀ-ÿ]{2,}/.test(trimmedName)) {
-            newErrors.name = 'Por favor, insira um nome válido (mínimo de 3 letras).';
-        }
+    const validateAll = () => {
+        const newErrors = {
+            name: validateName(formData.name),
+            whatsapp: validateWhatsApp(formData.whatsapp),
+            email: validateEmail(formData.email),
+            company: validateCompany(formData.company),
+            message: validateMessage(formData.message),
+        };
 
-        // 2. Validação de WhatsApp: Celular obrigatório com DDD
-        const phoneDigits = formData.whatsapp.replace(/\D/g, '');
-        if (!phoneDigits) {
-            newErrors.whatsapp = 'Por favor, informe seu WhatsApp com DDD.';
-        } else if (!validatePhone(formData.whatsapp)) {
-            newErrors.whatsapp = 'Número inválido. Digite o DDD + número (ex: 64 99981-8481).';
-        }
-
-        // 3. E-mail: TOTALMENTE OPCIONAL!
-        // Se a pessoa preencher, valida o formato. Se deixar em branco, aceita normalmente!
-        const trimmedEmail = formData.email.trim();
-        if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmedEmail)) {
-            newErrors.email = 'E-mail inválido. Se preferir, deixe em branco para contato só via WhatsApp.';
-        }
+        // Remove chaves nulas
+        Object.keys(newErrors).forEach((key) => {
+            if (!newErrors[key]) delete newErrors[key];
+        });
 
         setErrors(newErrors);
+        setTouched({
+            name: true,
+            whatsapp: true,
+            email: true,
+            company: true,
+            message: true,
+        });
+
         return Object.keys(newErrors).length === 0;
     };
 
-    // Gera a mensagem para envio no WhatsApp
     const buildWhatsAppUrl = () => {
         const text =
             `🚀 *SOLICITAÇÃO DE PROPOSTA - STACK BLACKZADA*\n\n` +
@@ -107,17 +266,22 @@ export default function Contact({ t }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Se houver qualquer erro de validação, trava imediatamente!
-        if (!validateForm()) {
+        // Se houver qualquer erro, trava e foca no primeiro campo com erro!
+        if (!validateAll()) {
             setStatus('error');
+            const firstErrorField = ['name', 'whatsapp', 'email', 'company', 'message'].find(
+                (f) => errors[f] || validateField(f, formData[f])
+            );
+            if (firstErrorField) {
+                const el = document.querySelector(`[name="${firstErrorField}"]`);
+                if (el) el.focus();
+            }
             return;
         }
 
         setStatus('submitting');
-
         const waUrl = buildWhatsAppUrl();
 
-        // Salva cópia local de segurança
         try {
             const stored = JSON.parse(localStorage.getItem('stack_leads') || '[]');
             stored.push({ ...formData, timestamp: new Date().toISOString() });
@@ -125,14 +289,13 @@ export default function Contact({ t }) {
         } catch (_) {}
 
         setStatus('success');
-
-        // Abre o WhatsApp imediatamente com os dados preenchidos
         window.open(waUrl, '_blank');
     };
 
     const resetForm = () => {
         setStatus('idle');
         setErrors({});
+        setTouched({});
         setFormData({
             name: '',
             whatsapp: '',
@@ -208,7 +371,7 @@ export default function Contact({ t }) {
                                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                         </svg>
                                         <div>
-                                            <span className="font-bold block">Por favor, corrija os campos abaixo:</span>
+                                            <span className="font-bold block">Atenção: corrija os campos destacados em vermelho abaixo:</span>
                                             <ul className="list-disc list-inside mt-1 space-y-0.5">
                                                 {Object.values(errors).map((err, i) => (
                                                     <li key={i}>{err}</li>
@@ -219,31 +382,35 @@ export default function Contact({ t }) {
                                 )}
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {/* Nome (Obrigatório) */}
+                                    {/* Nome (Obrigatório - Nome e Sobrenome, sem números/emojis) */}
                                     <div>
                                         <label className="block text-xs font-code font-bold uppercase tracking-wider text-brand-dark dark:text-gray-200 mb-1.5">
-                                            Seu Nome *
+                                            Seu Nome Completo *
                                         </label>
                                         <input
                                             type="text"
                                             name="name"
                                             value={formData.name}
                                             onChange={handleChange}
+                                            onBlur={handleBlur}
                                             placeholder="Ex: Carlos Silva"
                                             className={`w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-darkbg-main border text-brand-dark dark:text-white placeholder-gray-400 text-sm focus:outline-none transition-all ${
                                                 errors.name
-                                                    ? 'border-red-500 bg-red-50/10 focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                                                    ? 'border-red-500 bg-red-50/15 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
                                                     : 'border-brand-subtle/25 dark:border-brand-accent/30 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent'
                                             }`}
                                         />
                                         {errors.name && (
-                                            <span className="text-red-500 text-xs font-code mt-1 block">
-                                                {errors.name}
+                                            <span className="text-red-500 text-xs font-code mt-1.5 flex items-center gap-1">
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                                <span>{errors.name}</span>
                                             </span>
                                         )}
                                     </div>
 
-                                    {/* WhatsApp (Obrigatório com Máscara e Validação de DDD) */}
+                                    {/* WhatsApp (Obrigatório - DDD ANATEL + 9 dígitos) */}
                                     <div>
                                         <label className="block text-xs font-code font-bold uppercase tracking-wider text-brand-dark dark:text-gray-200 mb-1.5">
                                             WhatsApp com DDD *
@@ -253,24 +420,28 @@ export default function Contact({ t }) {
                                             name="whatsapp"
                                             value={formData.whatsapp}
                                             onChange={handlePhoneChange}
+                                            onBlur={handleBlur}
                                             maxLength={15}
                                             placeholder="(64) 99981-8481"
                                             className={`w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-darkbg-main border text-brand-dark dark:text-white placeholder-gray-400 text-sm focus:outline-none transition-all ${
                                                 errors.whatsapp
-                                                    ? 'border-red-500 bg-red-50/10 focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                                                    ? 'border-red-500 bg-red-50/15 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
                                                     : 'border-brand-subtle/25 dark:border-brand-accent/30 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent'
                                             }`}
                                         />
                                         {errors.whatsapp && (
-                                            <span className="text-red-500 text-xs font-code mt-1 block">
-                                                {errors.whatsapp}
+                                            <span className="text-red-500 text-xs font-code mt-1.5 flex items-center gap-1">
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                                <span>{errors.whatsapp}</span>
                                             </span>
                                         )}
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {/* Nome da Empresa (Opcional) */}
+                                    {/* Nome da Empresa (Opcional, mas validado se preenchido) */}
                                     <div>
                                         <label className="block text-xs font-code font-bold uppercase tracking-wider text-brand-dark dark:text-gray-200 mb-1.5">
                                             Nome da Empresa <span className="text-gray-400 font-normal lowercase">(opcional)</span>
@@ -280,12 +451,25 @@ export default function Contact({ t }) {
                                             name="company"
                                             value={formData.company}
                                             onChange={handleChange}
-                                            placeholder="Sua Empresa Ltda"
-                                            className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-darkbg-main border border-brand-subtle/25 dark:border-brand-accent/30 text-brand-dark dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all"
+                                            onBlur={handleBlur}
+                                            placeholder="Ex: Alfa Logística"
+                                            className={`w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-darkbg-main border text-brand-dark dark:text-white placeholder-gray-400 text-sm focus:outline-none transition-all ${
+                                                errors.company
+                                                    ? 'border-red-500 bg-red-50/15 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+                                                    : 'border-brand-subtle/25 dark:border-brand-accent/30 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent'
+                                            }`}
                                         />
+                                        {errors.company && (
+                                            <span className="text-red-500 text-xs font-code mt-1.5 flex items-center gap-1">
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                                <span>{errors.company}</span>
+                                            </span>
+                                        )}
                                     </div>
 
-                                    {/* E-mail (TOTALMENTE OPCIONAL) */}
+                                    {/* E-mail (TOTALMENTE OPCIONAL - NÃO OBRIGATÓRIO) */}
                                     <div>
                                         <label className="block text-xs font-code font-bold uppercase tracking-wider text-brand-dark dark:text-gray-200 mb-1.5">
                                             E-mail <span className="text-gray-400 font-normal lowercase">(opcional - não obrigatório)</span>
@@ -295,16 +479,20 @@ export default function Contact({ t }) {
                                             name="email"
                                             value={formData.email}
                                             onChange={handleChange}
+                                            onBlur={handleBlur}
                                             placeholder="carlos@empresa.com.br"
                                             className={`w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-darkbg-main border text-brand-dark dark:text-white placeholder-gray-400 text-sm focus:outline-none transition-all ${
                                                 errors.email
-                                                    ? 'border-red-500 bg-red-50/10 focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                                                    ? 'border-red-500 bg-red-50/15 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
                                                     : 'border-brand-subtle/25 dark:border-brand-accent/30 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent'
                                             }`}
                                         />
                                         {errors.email && (
-                                            <span className="text-red-500 text-xs font-code mt-1 block">
-                                                {errors.email}
+                                            <span className="text-red-500 text-xs font-code mt-1.5 flex items-center gap-1">
+                                                <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                                <span>{errors.email}</span>
                                             </span>
                                         )}
                                     </div>
@@ -329,7 +517,7 @@ export default function Contact({ t }) {
                                     </select>
                                 </div>
 
-                                {/* Mensagem */}
+                                {/* Mensagem / Detalhes */}
                                 <div>
                                     <label className="block text-xs font-code font-bold uppercase tracking-wider text-brand-dark dark:text-gray-200 mb-1.5">
                                         Conte um pouco sobre o projeto ou gargalo <span className="text-gray-400 font-normal lowercase">(opcional)</span>
@@ -339,9 +527,22 @@ export default function Contact({ t }) {
                                         rows={3}
                                         value={formData.message}
                                         onChange={handleChange}
+                                        onBlur={handleBlur}
                                         placeholder="Ex: Precisamos automatizar a gestão de pedidos e substituir planilhas manuais..."
-                                        className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-darkbg-main border border-brand-subtle/25 dark:border-brand-accent/30 text-brand-dark dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all resize-none"
+                                        className={`w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-darkbg-main border text-brand-dark dark:text-white placeholder-gray-400 text-sm focus:outline-none transition-all resize-none ${
+                                            errors.message
+                                                ? 'border-red-500 bg-red-50/15 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+                                                : 'border-brand-subtle/25 dark:border-brand-accent/30 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent'
+                                        }`}
                                     ></textarea>
+                                    {errors.message && (
+                                        <span className="text-red-500 text-xs font-code mt-1.5 flex items-center gap-1">
+                                            <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                            </svg>
+                                            <span>{errors.message}</span>
+                                        </span>
+                                    )}
                                 </div>
 
                                 {/* Botão de Envio com Validação Estrita */}
