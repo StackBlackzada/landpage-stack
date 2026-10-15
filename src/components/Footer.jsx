@@ -258,7 +258,7 @@ export default function Footer() {
                             </span>
 
                             <a
-                                href="#contato-form"
+                                href="#contato"
                                 className="group inline-flex items-center gap-2 font-semibold text-[#d1dcd6] transition-colors duration-200 hover:text-white"
                             >
                                 Solicitar proposta
