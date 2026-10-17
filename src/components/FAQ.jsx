@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export default function FAQ({ t }) {
-    const [openIndex, setOpenIndex] = useState(0); // Abre a primeira por padrão para instigar leitura
+    const [openIndex, setOpenIndex] = useState(0); // Abre a primeira por padrão
 
     const faqs = [
         {
@@ -15,7 +15,7 @@ export default function FAQ({ t }) {
                 'O prazo varia de acordo com o escopo e complexidade técnica. Para versões enxutas (MVPs) ou automações específicas, o prazo típico é de 4 a 8 semanas. Em todos os projetos trabalhamos com sprints quinzenais, garantindo que sua equipe teste e aprove entregas reais funcionando logo nas primeiras semanas.',
         },
         {
-            question: 'Como é calculado o investimento? Valor fechado ou horas trabalhadas?',
+            question: 'Como é calculated o investimento? Valor fechado ou horas trabalhadas?',
             answer:
                 'Oferecemos dois formatos transparentes: Escopo Fechado (orçamento e prazo pré-fixados para projetos com requisitos bem definidos) ou Squad Dedicado / Ciclos Ágeis (modelo flexível por sprints para produtos em evolução contínua, onde você prioriza o backlog conforme a necessidade do negócio).',
         },
@@ -46,32 +46,39 @@ export default function FAQ({ t }) {
     };
 
     return (
-        <section className="py-16 sm:py-24 px-4 sm:px-6 bg-brand-card/30 dark:bg-darkbg-card/30 relative z-20 border-t border-brand-subtle/10 dark:border-brand-accent/10" id="faq">
+        <section className="py-20 sm:py-28 px-4 sm:px-6 relative z-20 border-t border-emerald-500/15 dark:border-emerald-500/10 bg-gray-50/50 dark:bg-zinc-950/50" id="faq">
             <div className="max-w-4xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-12 sm:mb-16">
-                    <div className="font-code text-xs text-brand-subtle dark:text-brand-accent tracking-widest mb-2 font-bold uppercase">
-                        {'// DÚVIDAS FREQUENTES'}
+                {/* Header da Seção */}
+                <div className="text-center mb-16 sm:mb-20">
+                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md mb-4 shadow-sm">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span className="font-code text-[11px] sm:text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                            // DÚVIDAS FREQUENTES
+                        </span>
                     </div>
-                    <h2 className="font-display text-3xl sm:text-5xl font-black text-brand-dark dark:text-white mb-4">
-                        Perguntas frequentes antes de contratar
+
+                    <h2 className="font-display text-3xl sm:text-5xl font-black text-black dark:text-white mb-5 tracking-tight">
+                        Perguntas frequentes antes de <span className="text-emerald-600 dark:text-emerald-400 relative inline-block">contratar <span className="absolute bottom-1 left-0 w-full h-[3px] bg-emerald-500/40 rounded"></span></span>
                     </h2>
-                    <p className="text-brand-dark/80 dark:text-gray-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
                         Transparência total desde o primeiro contato. Se tiver qualquer outra dúvida, fale diretamente com nossos engenheiros.
                     </p>
                 </div>
 
-                {/* Acordeão */}
-                <div className="space-y-3 sm:space-y-4">
+                {/* Acordeão com Glassmorphism refinado */}
+                <div className="space-y-4">
                     {faqs.map((faq, index) => {
                         const isOpen = openIndex === index;
                         return (
                             <div
                                 key={index}
-                                className={`glass-card rounded-2xl transition-all duration-300 border ${
+                                className={`group rounded-2xl bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl transition-all duration-500 border overflow-hidden shadow-lg shadow-black/[0.02] dark:shadow-black/40 ${
                                     isOpen
-                                        ? 'border-brand-accent shadow-lg bg-white/90 dark:bg-darkbg-card/95'
-                                        : 'border-brand-subtle/20 dark:border-brand-accent/15 hover:border-brand-accent/40'
+                                        ? 'border-emerald-500/60 dark:border-emerald-500/60 shadow-emerald-500/5'
+                                        : 'border-gray-200/60 dark:border-zinc-800/80 hover:border-emerald-500/30'
                                 }`}
                             >
                                 <button
@@ -79,14 +86,16 @@ export default function FAQ({ t }) {
                                     aria-expanded={isOpen}
                                     className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 cursor-pointer focus:outline-none"
                                 >
-                                    <span className="font-display font-bold text-base sm:text-lg text-brand-dark dark:text-white leading-snug">
+                                    <span className={`font-display font-bold text-base sm:text-lg transition-colors duration-300 leading-snug ${
+                                        isOpen ? 'text-emerald-600 dark:text-emerald-400' : 'text-black dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+                                    }`}>
                                         {faq.question}
                                     </span>
                                     <div
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
+                                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 border ${
                                             isOpen
-                                                ? 'bg-brand-accent text-brand-dark rotate-180'
-                                                : 'bg-brand-subtle/10 dark:bg-brand-accent/10 text-brand-subtle dark:text-brand-accent'
+                                                ? 'bg-emerald-500 text-black border-emerald-400 rotate-180 shadow-sm'
+                                                : 'bg-gray-100 dark:bg-zinc-800/80 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-zinc-700 group-hover:border-emerald-500/40'
                                         }`}
                                     >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +105,7 @@ export default function FAQ({ t }) {
                                 </button>
 
                                 {isOpen && (
-                                    <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-sm sm:text-base text-brand-dark/80 dark:text-gray-300 leading-relaxed border-t border-brand-subtle/10 dark:border-brand-accent/10 pt-4">
+                                    <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-200/50 dark:border-zinc-800/80 pt-4">
                                         {faq.answer}
                                     </div>
                                 )}
@@ -106,15 +115,15 @@ export default function FAQ({ t }) {
                 </div>
 
                 {/* Ajuda adicional rápida */}
-                <div className="mt-10 text-center font-code text-xs sm:text-sm">
-                    <span className="text-brand-dark/70 dark:text-gray-400">
+                <div className="mt-12 text-center font-code text-xs sm:text-sm">
+                    <span className="text-gray-500 dark:text-gray-400">
                         Não encontrou a resposta para sua dúvida?{' '}
                     </span>
                     <a
                         href="https://wa.me/5564999818481?text=Ol%C3%A1!%20Gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20desenvolvimento%20de%20software%20com%20a%20Stack%20Blackzada."
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-bold text-brand-subtle dark:text-brand-accent hover:underline inline-flex items-center gap-1"
+                        className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1.5 transition-colors"
                     >
                         <span>Fale agora no WhatsApp</span>
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
