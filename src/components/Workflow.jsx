@@ -56,7 +56,7 @@ export default function Workflow({ t }) {
             outcome: 'Equipe autônoma e tranquilidade operacional garantida.',
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636l3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
             ),
         },
@@ -64,51 +64,59 @@ export default function Workflow({ t }) {
 
     return (
         <section
-            className="py-16 sm:py-24 px-4 sm:px-6 relative z-20"
+            className="py-20 sm:py-28 px-4 sm:px-6 relative z-20 max-w-5xl mx-auto"
             id="como-trabalhamos"
         >
-            <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-12 sm:mb-16">
-                    <div className="font-code text-xs text-brand-subtle dark:text-brand-accent tracking-widest mb-2 font-bold uppercase">
-                        {'// METODOLOGIA & PREVISIBILIDADE'}
+            <div className="w-full">
+                {/* Header da Seção */}
+                <div className="text-center mb-16 sm:mb-20">
+                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md mb-4 shadow-sm">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span className="font-code text-[11px] sm:text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                            // METODOLOGIA & PREVISIBILIDADE
+                        </span>
                     </div>
-                    <h2 className="font-display text-3xl sm:text-5xl font-black text-brand-dark dark:text-white mb-4">
-                        Do diagnóstico à produção em 5 etapas claras
+
+                    <h2 className="font-display text-3xl sm:text-5xl font-black text-black dark:text-white mb-5 tracking-tight">
+                        Do diagnóstico à produção em <span className="text-emerald-600 dark:text-emerald-400 relative inline-block">5 etapas claras <span className="absolute bottom-1 left-0 w-full h-[3px] bg-emerald-500/40 rounded"></span></span>
                     </h2>
-                    <p className="text-brand-dark/80 dark:text-gray-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
                         Um processo maduro que elimina surpresas de orçamento e garante que sua empresa receba exatamente o que contratou.
                     </p>
                 </div>
 
-                {/* Timeline vertical */}
-                <div className="space-y-8 sm:space-y-10 relative border-l-2 border-brand-subtle/30 dark:border-brand-accent/30 pl-6 sm:pl-10 ml-4 sm:ml-8 timeline-container">
+                {/* Timeline vertical com efeito de vidro fosco avançado */}
+                <div className="space-y-6 sm:space-y-8 relative border-l-2 border-emerald-500/30 dark:border-emerald-500/30 pl-6 sm:pl-12 ml-4 sm:ml-10">
                     {steps.map((step) => (
-                        <div key={step.n} className="relative timeline-step">
+                        <div key={step.n} className="relative group">
                             {/* Número redondo na linha do tempo */}
-                            <div className="absolute -left-[37px] sm:-left-[53px] top-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-light dark:bg-darkbg-card border-2 border-brand-accent flex items-center justify-center font-code font-bold text-xs sm:text-sm text-brand-dark dark:text-brand-accent shadow">
+                            <div className="absolute -left-[37px] sm:-left-[61px] top-1.5 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white/80 dark:bg-zinc-900/90 backdrop-blur-md border-2 border-emerald-500 flex items-center justify-center font-code font-bold text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 shadow-sm group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-black transition-all duration-300">
                                 {step.n}
                             </div>
 
-                            {/* Card da etapa */}
-                            <div className="glass-card p-5 sm:p-7 rounded-2xl border border-brand-subtle/20 dark:border-brand-accent/20 hover:border-brand-accent/50 transition-all duration-300 shadow-sm">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2.5">
-                                    <h3 className="font-display text-lg sm:text-2xl font-bold text-brand-dark dark:text-white">
+                            {/* Card com efeito Glassmorphism refinado */}
+                            <div className="rounded-2xl bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-gray-200/60 dark:border-zinc-800/80 p-6 sm:p-7 shadow-lg shadow-black/[0.02] dark:shadow-black/40 hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all duration-500 transform hover:-translate-y-1">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                                    <h3 className="font-display text-lg sm:text-xl font-bold text-black dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">
                                         {step.title}
                                     </h3>
-                                    <span className="font-code text-[11px] sm:text-xs font-bold text-brand-subtle dark:text-brand-accent bg-brand-accent/10 dark:bg-brand-accent/20 px-2.5 py-1 rounded-md shrink-0 w-fit">
+                                    <span className="font-code text-[11px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20 px-3 py-1 rounded-md shrink-0 w-fit">
                                         {step.timeline}
                                     </span>
                                 </div>
 
-                                <p className="text-xs sm:text-sm text-brand-dark/80 dark:text-gray-300 leading-relaxed mb-4">
+                                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-5">
                                     {step.desc}
                                 </p>
 
-                                <div className="flex items-center gap-2 pt-3 border-t border-brand-subtle/10 dark:border-brand-accent/15 font-code text-xs text-brand-dark/85 dark:text-gray-200">
-                                    <span className="font-bold text-brand-subtle dark:text-brand-accent uppercase text-[10px] sm:text-xs">
+                                <div className="flex items-center gap-2 pt-4 border-t border-gray-200/50 dark:border-zinc-800 font-code text-xs text-gray-700 dark:text-gray-300">
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400 uppercase text-[10px] sm:text-xs">
                                         Resultado da Etapa:
                                     </span>
-                                    <span>{step.outcome}</span>
+                                    <span className="text-gray-600 dark:text-gray-400">{step.outcome}</span>
                                 </div>
                             </div>
                         </div>
