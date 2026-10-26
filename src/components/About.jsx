@@ -128,7 +128,7 @@ export default function About({ t }) {
                             <div className="pt-4 border-t border-gray-200/50 dark:border-zinc-800 flex items-center justify-between font-code text-xs">
                                 <span className="text-gray-500 dark:text-gray-400">LinkedIn:</span>
                                 <a
-                                    href="#"
+                                    href="https://www.linkedin.com/in/maicon-douglas-oliveira-santos-32508a3b7"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
